@@ -78,6 +78,45 @@ const displayMovements = (function(movements) {
 });
 displayMovements(account1.movements)
 
+const calcDisplayBalance = function (movements) {
+  const globalBalance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${globalBalance}€`;
+};
+calcDisplayBalance(account1.movements);
+
+const caclDisplaySummary = function(movements, intRate) {
+  const inSum = movements
+  .filter(mov => mov > 0)
+  .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${inSum}€`
+
+  const outSum = movements
+  .filter(mov => mov < 0)
+  .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(outSum)}€`
+
+  const interestSum = movements
+  .filter(mov => mov > 0)
+  .map(dep => dep * intRate * 0.01)
+  .reduce((acc, int) => acc + int, 0);
+  labelSumInterest.textContent = `${interestSum}€`
+}
+caclDisplaySummary(account1.movements, account1.interestRate)
+
+const createUsernames = function (accs) {
+  accs.forEach(function(acc) {
+    acc.username = acc.owner
+    .toLowerCase()
+    .split(' ')
+    .map(name => name[0])
+    .join('')
+  });
+};
+createUsernames(accounts);
+
+
+
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
