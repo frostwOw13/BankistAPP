@@ -61,6 +61,17 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const createUsernames = function (accs) {
+  accs.forEach(function(acc) {
+    acc.username = acc.owner
+    .toLowerCase()
+    .split(' ')
+    .map(name => name[0])
+    .join('')
+  });
+};
+createUsernames(accounts);
+
 const displayMovements = (function(movements) {
   containerMovements.innerHTML = '';
 
@@ -77,12 +88,10 @@ const displayMovements = (function(movements) {
   });
 });
 
-
-const calcDisplayBalance = function (movements) {
-  const globalBalance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${globalBalance}€`;
+const calcDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${acc.balance}€`;
 };
-
 
 const caclDisplaySummary = function(acc) {
   const inSum = acc.movements
@@ -102,17 +111,11 @@ const caclDisplaySummary = function(acc) {
   labelSumInterest.textContent = `${interestSum}€`
 }
 
-
-const createUsernames = function (accs) {
-  accs.forEach(function(acc) {
-    acc.username = acc.owner
-    .toLowerCase()
-    .split(' ')
-    .map(name => name[0])
-    .join('')
-  });
-};
-createUsernames(accounts);
+const updateUI = function (acc) {
+  displayMovements(acc.movements);
+  calcDisplayBalance(acc);
+  caclDisplaySummary(acc);
+}
 
 let currentUser;
 
@@ -129,11 +132,31 @@ btnLogin.addEventListener('click', function(e) {
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
-    displayMovements(currentUser.movements)
-    calcDisplayBalance(currentUser.movements);
-    caclDisplaySummary(currentUser)
+    updateUI(currentUser);
   }
-})
+});
+
+btnTransfer.addEventListener('click', function(e) {
+  e.preventDefault();
+
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(acc => acc.username === inputTransferTo.value);
+
+  inputTransferAmount.value = inputTransferTo.value = '';
+  inputTransferAmount.blur();
+
+  if (
+    amount > 0 &&
+    receiverAcc &&
+    receiverAcc?.username !== currentUser.username &&
+    currentUser.balance >= amountgit
+    ) {
+      currentUser.movements.push(-amount);
+      receiverAcc.movements.push(amount);
+    }
+
+    updateUI(currentUser);
+});
 
 
 
