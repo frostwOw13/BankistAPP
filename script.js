@@ -158,6 +158,41 @@ btnTransfer.addEventListener('click', function(e) {
     updateUI(currentUser);
 });
 
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentUser.username &&
+    Number(inputClosePin.value) === currentUser.pin
+    ) {
+      const index = accounts.findIndex(acc => acc.username === currentUser.username)
+
+      accounts.splice(index, 1)
+
+      containerApp.style.opacity = 0;
+    }
+
+    inputCloseUsername.value = inputClosePin.value = '';
+    inputClosePin.blur();
+});
+
+btnLoan.addEventListener('click', function(e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+  if (
+    amount > 0 &&
+    currentUser.movements.some(mov => mov >= amount/10)
+    ) {
+      currentUser.movements.push(amount);
+    }
+
+    updateUI(currentUser);
+
+    inputLoanAmount.value = '';
+    inputLoanAmount.blur();
+
+});
 
 
 
